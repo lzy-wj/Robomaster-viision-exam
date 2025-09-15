@@ -1,0 +1,44 @@
+# detector_node 配置文件
+# 数学思考：颜色分割的阈值设计基于 HSV 空间的概率分布建模，
+# 通过先验统计确定蓝色目标在不同光照条件下的分布参数
+
+detector_node:
+  ros__parameters:
+    # HSV 颜色阈值（蓝色目标）
+    hue_lower: 90        # H 通道下界 [0-179]
+    hue_upper: 130       # H 通道上界 
+    saturation_lower: 80  # S 通道下界 [0-255]
+    saturation_upper: 255 # S 通道上界
+    value_lower: 50       # V 通道下界 [0-255] 
+    value_upper: 255      # V 通道上界
+    
+    # 形态学操作参数
+    morphology_kernel_size: 3      # 形态学核大小
+    morphology_iterations: 1       # 开运算迭代次数
+    
+    # 目标过滤参数
+    min_contour_area: 100.0        # 最小轮廓面积（像素²）
+    max_contour_area: 10000.0      # 最大轮廓面积
+    
+    # 性能监控
+    enable_fps_monitor: true       # 是否启用帧率监控
+    fps_report_interval: 30        # 帧率报告间隔（帧数）
+    
+    # 质心平滑（指数移动平均）
+    enable_centroid_smoothing: true  # 是否启用质心平滑
+    smoothing_alpha: 0.7             # 平滑系数 α ∈ (0,1)，越大越平滑
+    
+    # 调试可视化
+    enable_debug_image: false      # 是否发布调试图像
+    debug_topic: "/debug/detection_result"  # 调试图像话题
+
+    # 鲁棒性增强
+    enable_clahe: true             # 启用 CLAHE（改善亮度波动）
+    clahe_clip_limit: 2.0          # CLAHE 对比度限制
+    clahe_tile_grid: 8             # CLAHE 网格尺寸（tileGridSize）
+    adaptive_value_norm: true      # 对 HSV 的 V 通道做直方图均衡
+    use_chromaticity: true         # 使用归一化 RGB 色度（B 占比）与 HSV 联合
+    chromaticity_b_threshold: 0.45 # B 分量比例阈值（0-1）
+    adaptive_v_percentile: 5       # V 下界自适应的分位点（低百分位）
+    adaptive_v_margin: 10          # 在分位点基础上减去的裕量
+    pre_blur_ksize: 3              # 前置高斯滤波核（奇数，>=3）
